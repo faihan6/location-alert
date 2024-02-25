@@ -9,7 +9,7 @@ let lastKnownLocation = null;
 
 // Register service worker
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js')
+    navigator.serviceWorker.register('service-worker.js')
         .then(registration => {
             log('Service Worker registered with scope:', registration.scope);
         })
