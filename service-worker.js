@@ -1,6 +1,8 @@
+const cacheName = 'location-monitoring-pwa'
+
 self.addEventListener('install', event => {
     event.waitUntil(
-        caches.open('location-monitoring-pwa').then(cache => {
+        caches.open(cacheName).then(cache => {
             return cache.addAll([
                 // 'index.html',
                 // 'app.js',
@@ -13,8 +15,18 @@ self.addEventListener('install', event => {
 
 self.addEventListener('fetch', event => {
     event.respondWith(
-        caches.match(event.request).then(response => {
-            return response || fetch(event.request);
+        fetch(event.request)
+        .then(async response => {
+            if (response && response.status === 200) {
+                const cache = await caches.open(cacheName)
+                cache.put(event.request, response.clone());
+            }
+          return response;
         })
-    );
+        .catch(async () => {
+            // If the network request fails, try to get the response from the cache
+            const cacheResponse = await caches.match(event.request);
+            return cacheResponse || new Response('Offline Content Here', { status: 500 });
+        })
+      );
 });
