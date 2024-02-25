@@ -2,9 +2,9 @@ self.addEventListener('install', event => {
     event.waitUntil(
         caches.open('location-monitoring-pwa').then(cache => {
             return cache.addAll([
-                'index.html',
-                'app.js',
-                'manifest.json'
+                // 'index.html',
+                // 'app.js',
+                // 'manifest.json'
                 // Add other dependencies here
             ]);
         })

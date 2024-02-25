@@ -23,8 +23,7 @@ if ('serviceWorker' in navigator) {
 // Check if Geolocation is supported
 if ('geolocation' in navigator) {
     // Set the target location coordinates (latitude, longitude)
-    const targetLocation = { lat: 37.7749, lon: -122.4194 };
-    const targetRadius = 1; // in kilometers
+    const targetRadius = 0.1; // in kilometers
 
     // Options for geolocation
     const geoOptions = {
