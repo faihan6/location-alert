@@ -12,14 +12,12 @@
 <body>
     <h1>Location Monitoring PWA</h1>
     <div id="menubar" style="display: flex; flex-direction: row;">
-        <button id="app-button" style="display: block; border: solid 1px;">App</button>
+        <button id="app-button" style="display: block; border: solid 1px; background-color: #AAAAAA">Current Location</button>
+        <button id="target-locations-button" style="display: block;">Target Location</button>
         <button id="logs-button" style="display: block;">Logs</button>
     </div>
-    <div id="app-window" style="display: block; width: 100%; min-height: 500px; border: solid 1px">
+    <div id="app-window" style="display: block; width: 100%; min-height: 500px; border: solid 1px;">
         <h2>Location</h2>
-        <button id="set-target-button">Set current location as Target</button>
-        <button id="set-lkas-target-button">Set last known location as Target</button>
-        <h3 id="distance-from-target"></h3>
         <div id="details-container" style="display: block; width: 100%; min-height: 500px; border: solid 1px">
             <span id="latitude"></span><br>
             <span id="longitude"></span><br>
@@ -29,6 +27,18 @@
             <span id="heading"></span><br>
             <span id="speed"></span><br>
         </div>
+    </div>
+    <div id="target-locations-window" style="display: none; width: 100%; min-height: 500px; border: solid 1px">
+        <h2>Target locations</h2>
+        <div>
+            Add target Input
+            <input type="text" id="target-latitude" placeholder="Enter target latitude"/>
+            <input type="text" id="target-longitude" placeholder="Enter target longitude"/>
+            <input type="text" id="target-radius" placeholder="Enter target radius"/>
+            <input type="text" id="target-name" placeholder="Enter target name"/>
+            <button id="add-target-location-button">Add</button>
+        </div>
+        <div id = "target-locations-container"></div>
     </div>
     <div id="logs-window" style="display: none; width: 100%; min-height: 500px; border: solid 1px">
         <h2>Logs</h2>

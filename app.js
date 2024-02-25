@@ -1,16 +1,27 @@
 const appButton = document.getElementById('app-button')
 const logsButton = document.getElementById('logs-button')
+const targetLocationsButton = document.getElementById('target-locations-button')
 
 const appWindow = document.getElementById('app-window')
+
 const logsWindow = document.getElementById('logs-window')
 const logsContainer = document.getElementById('logs-container')
 
+const targetLocationsWindow = document.getElementById('target-locations-window')
 const targetLocationButton = document.getElementById('set-target-button')
-const targetlkasLocationButton = document.getElementById('set-lkas-target-button')
+const targetLocationsContainer = document.getElementById('target-locations-container')
+
+const addTargetLocationButton = document.getElementById('add-target-location-button');
+
+const targetNameInput = document.getElementById('target-name')
+const targetLatitudeInput = document.getElementById('target-latitude')
+const targetLongitudeInput = document.getElementById('target-longitude')
+const targetRadiusInput = document.getElementById('target-radius')
 
 
-const targetLocation = { latitude: 9.73581586172279, longitude: 77.7916178550191 };
 const targetRadius = 0.1; // in kilometers
+
+const targetLocations = []
 
 // Options for geolocation
 const geoOptions = {
@@ -38,7 +49,7 @@ if ('geolocation' in navigator) {
     //navigator.geolocation.watchPosition(handleLocationUpdate, handleLocationError, geoOptions);
 
     setInterval(() => {
-        console.log("Requesting location...");
+        log("Requesting location...");
         navigator.geolocation.getCurrentPosition(handleLocationUpdate, handleLocationError, geoOptions);
     }, 3 * 1000)
 } else {
@@ -48,47 +59,80 @@ if ('geolocation' in navigator) {
 
 appButton.onclick = function() {
     appWindow.style.display = 'block';
+    appButton.style.backgroundColor = '#AAAAAA';
+
     logsWindow.style.display = 'none';
+    logsButton.style.backgroundColor = 'white';
+
+    targetLocationsWindow.style.display = 'none'
+    targetLocationsButton.style.backgroundColor = 'white'
 }
 
 logsButton.onclick = function() {
     appWindow.style.display = 'none';
+    appButton.style.backgroundColor = 'white';
+
     logsWindow.style.display = 'block';
+    logsButton.style.backgroundColor = '#AAAAAA';
+
+    targetLocationsWindow.style.display = 'none'
+    targetLocationsButton.style.backgroundColor = 'white'
 }
 
-targetLocationButton.onclick = async function(){
+targetLocationsButton.onclick = function(){
+    appWindow.style.display = 'none';
+    appButton.style.backgroundColor = 'white';
+
+    logsWindow.style.display = 'none';
+    logsButton.style.backgroundColor = 'white';
+
+    targetLocationsWindow.style.display = 'block'
+    targetLocationsButton.style.backgroundColor = '#AAAAAA'
+}
+
+
+targetLocationButton?.addEventListener('click', async function(){
     try{
         log('targetLocationButton clicked')
         let location = await new Promise((rs) => {
             navigator.geolocation.getCurrentPosition(rs, log, geoOptions)
         })
-        log('targetLocationButton click success')
+        log('targetLocationButton click success', location.coords.toJSON())
         updateLocationCoordsToApp(location.coords)
-        log('updating location', location.coords.toJSON())
         targetLocation.latitude = location.coords.latitude;
         targetLocation.longitude = location.coords.longitude;
     }
     catch(e){
         log(`Error: targetLocationButton onclick | ${e.toString()}`)
     }
-}
+})
 
-targetlkasLocationButton.onclick = function(){
+addTargetLocationButton?.addEventListener('click', function(){
     try{
-        log('targetlkasLocationButton clicked')
-        targetLocation.latitude = lastKnownCoords.latitude
-        targetLocation.longitude = lastKnownCoords.longitude
+        addTargetLocationToList({
+            latitude: parseFloat(targetLatitudeInput.value),
+            longitude: parseFloat(targetLongitudeInput.value)
+        }, parseFloat(targetRadiusInput.value), targetNameInput.value)
+
+        targetNameInput.value = ''
+        targetLatitudeInput.value = ''
+        targetLongitudeInput.value = ''
+        targetRadiusInput.value = ''
+        
     }
     catch(e){
-        log(`Error: targetlkasLocationButton onclick | ${e.toString()}`)
+        log(`Error: addTargetLocationButton onclick | ${e.toString()}`)
     }
-}   
+})
+
+
+ 
 
 function log(...args){
     console.log(...args)
     let div = document.createElement('div')
     div.innerHTML = `${new Date().toLocaleString()}: ${args.map(JSON.stringify).join(' ')}<br>`
-    div.classList.add('log-element')
+    div.classList.add('list-element')
     logsContainer.appendChild(div)
 
     // if logsContainer has more than 50 children, remove the first child
@@ -102,7 +146,6 @@ function updateLocationCoordsToApp(coords){
         log('updating New location:', coords);
         lastKnownCoords = coords
         // with better formatting
-        document.getElementById('distance-from-target').innerText = `Distance from Target Location ${targetLocation.latitude}, ${targetLocation.longitude} : ` + calculateDistance(coords.latitude, coords.longitude, targetLocation.latitude, targetLocation.longitude) + " km";
         document.getElementById('latitude').innerText = "Latitude: " + coords.latitude;
         document.getElementById('longitude').innerText = "Longitude: " + coords.longitude;
         document.getElementById('accuracy').innerText = "Accuracy: " + coords.accuracy;
@@ -138,21 +181,20 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 // Function to handle location updates
 function handleLocationUpdate(location) {
     try{
-    log('New location:', location.coords);
-    updateLocationCoordsToApp(location.coords)
-    const currentLocation = {
-        lat: location.coords.latitude,
-        lon: location.coords.longitude
-    };
+        log('New location:', location.coords);
+        updateLocationCoordsToApp(location.coords);
+        generateUIForTargetLocations()
+        const currentLocation = {
+            lat: location.coords.latitude,
+            lon: location.coords.longitude
+        };
 
-    const distance = calculateDistance(
-        currentLocation.lat, currentLocation.lon,
-        targetLocation.lat, targetLocation.lon
-    );
-
-    if (distance <= targetRadius) {
-        log(`You are within ${targetRadius} kilometers of the target location!`);
-    }
+        for(let targetLocation of targetLocations){
+            let distance = calculateDistance(currentLocation.lat, currentLocation.lon, targetLocation.coords.latitude, targetLocation.coords.longitude);
+            if(distance <= targetLocation.targetRadius){
+                log(`You are ${distance} kms away from ${targetLocation.name}`);
+            }
+        }
     }
     catch(e){
         log(`Error: handleLocationUpdate | ${e.toString()}`)
@@ -162,6 +204,39 @@ function handleLocationUpdate(location) {
 function handleLocationError(error) {
     log('Geolocation error:', error.toString());
 }
+
+function addTargetLocationToList(coords, targetRadius = 2, name){
+    targetLocations.push({coords, targetRadius, name})
+    generateUIForTargetLocations()
+}
+
+function removeTargetLocation(name){
+    targetLocations = targetLocations.filter(loc => loc.name !== name)
+    generateUIForTargetLocations()
+}
+
+function generateUIForTargetLocations(){
+    targetLocationsContainer.innerHTML = ''
+    targetLocations.forEach(loc => {
+        let div = document.createElement('div')
+        div.classList.add('list-element')
+        div.innerHTML = `Name: ${loc.name}<br>Latitude: ${loc.coords.latitude}<br>Longitude: ${loc.coords.longitude}<br>Target Radius: ${loc.targetRadius} kms<br>Distance from here: ${calculateDistance(lastKnownCoords.latitude, lastKnownCoords.longitude, loc.coords.latitude, loc.coords.longitude)} kms<br>`
+        targetLocationsContainer.appendChild(div)
+    })
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 GeolocationCoordinates.prototype.toString = function(){
     return `Latitude: ${this.latitude}, Longitude: ${this.longitude}, Accuracy: ${this.accuracy}, Altitude: ${this.altitude}, Altitude Accuracy: ${this.altitudeAccuracy}, Heading: ${this.heading}, Speed: ${this.speed}`
 }
@@ -177,3 +252,4 @@ GeolocationCoordinates.prototype.toJSON = function(){
         speed: this.speed
     }
 }
+
