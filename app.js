@@ -6,13 +6,15 @@ const logsWindow = document.getElementById('logs-window')
 const logsContainer = document.getElementById('logs-container')
 
 const targetLocationButton = document.getElementById('set-target-button')
+const targetlkasLocationButton = document.getElementById('set-lkas-target-button')
+
 
 const targetLocation = { latitude: 9.73581586172279, longitude: 77.7916178550191 };
 
 // Options for geolocation
 const geoOptions = {
     enableHighAccuracy: true,
-    timeout: 5000,
+    timeout: 100,
     maximumAge: 0
 };
 
@@ -65,7 +67,7 @@ if ('geolocation' in navigator) {
         );
 
         if (distance <= targetRadius) {
-            log('You are within 5 kilometers of the target location!');
+            log(`You are within ${targetRadius} kilometers of the target location!`);
         }
     }
 
@@ -102,6 +104,11 @@ targetLocationButton.onclick = async function(){
     targetLocation.latitude = location.coords.latitude;
     targetLocation.longitude = location.coords.longitude;
 }
+
+targetlkasLocationButton.onclick = function(){
+    targetLocation.latitude = lastKnownLocation.latitude
+    targetLocation.longitude = lastKnownLocation.longitude
+}   
 
 function log(...args){
     // add date and time with args
