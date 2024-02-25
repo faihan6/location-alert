@@ -5,7 +5,17 @@ const appWindow = document.getElementById('app-window')
 const logsWindow = document.getElementById('logs-window')
 const logsContainer = document.getElementById('logs-container')
 
+const targetLocationButton = document.getElementById('set-target-button')
+
 const targetLocation = { latitude: 9.73581586172279, longitude: 77.7916178550191 };
+
+// Options for geolocation
+const geoOptions = {
+    enableHighAccuracy: true,
+    timeout: 5000,
+    maximumAge: 0
+};
+
 
 let lastKnownLocation = null;
 
@@ -25,12 +35,7 @@ if ('geolocation' in navigator) {
     // Set the target location coordinates (latitude, longitude)
     const targetRadius = 0.1; // in kilometers
 
-    // Options for geolocation
-    const geoOptions = {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0
-    };
+    
 
     // Function to calculate distance between two points
     function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -89,6 +94,15 @@ logsButton.onclick = function() {
     logsWindow.style.display = 'block';
 }
 
+targetLocationButton.onclick = async function(){
+    let location = await new Promise((rs) => {
+        navigator.geolocation.getCurrentPosition(rs, log, geoOptions)
+    })
+    log('updating location', location.coords.toJSON())
+    targetLocation.latitude = location.coords.latitude;
+    targetLocation.longitude = location.coords.longitude;
+}
+
 function log(...args){
     // add date and time with args
     console.log(...args)
@@ -107,7 +121,7 @@ function log(...args){
 function updateLocationToApp(location){
     lastKnownLocation = location
     // with better formatting
-    document.getElementById('distance-from-target').innerText = "Distance from Target Location : (9.73581586172279, 77.7916178550191): " + calculateDistance(location.latitude, location.longitude, targetLocation.latitude, targetLocation.longitude) + " km";
+    document.getElementById('distance-from-target').innerText = `Distance from Target Location ${targetLocation.latitude}, ${targetLocation.longitude} : ` + calculateDistance(location.latitude, location.longitude, targetLocation.latitude, targetLocation.longitude) + " km";
     document.getElementById('latitude').innerText = "Latitude: " + location.latitude;
     document.getElementById('longitude').innerText = "Longitude: " + location.longitude;
     document.getElementById('accuracy').innerText = "Accuracy: " + location.accuracy;
