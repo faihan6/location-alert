@@ -2,7 +2,7 @@
     "name": "Location Monitoring PWA",
     "short_name": "Location PWA",
     "description": "A PWA to monitor location and alert when within 5 kilometers of a target location.",
-    "start_url": "/",
+    "start_url": "/location-alert",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#000000",
