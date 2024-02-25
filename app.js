@@ -1,3 +1,6 @@
+
+const mode = (new URLSearchParams(location.search)).get('mode') ?? 'watch';
+
 const appButton = document.getElementById('app-button')
 const logsButton = document.getElementById('logs-button')
 const targetLocationsButton = document.getElementById('target-locations-button')
@@ -50,12 +53,18 @@ if ('serviceWorker' in navigator) {
 
 if ('geolocation' in navigator) {
 
-    //navigator.geolocation.watchPosition(handleLocationUpdate, handleLocationError, geoOptions);
 
-    setInterval(() => {
-        log("Requesting location...");
-        navigator.geolocation.getCurrentPosition(handleLocationUpdate, handleLocationError, geoOptions);
-    }, 3 * 1000)
+    if(mode == 'loop'){
+        log("Initiating in loop mode for 3s")
+        setInterval(() => {
+            log("Requesting location...");
+            navigator.geolocation.getCurrentPosition(handleLocationUpdate, handleLocationError, geoOptions);
+        }, 3 * 1000)
+    }
+    else{
+        log("Initiating in watch mode")
+        navigator.geolocation.watchPosition(handleLocationUpdate, handleLocationError, geoOptions);
+    }
 } else {
     log('Geolocation is not supported by this browser.');
 }
