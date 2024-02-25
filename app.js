@@ -18,6 +18,10 @@ const targetLatitudeInput = document.getElementById('target-latitude')
 const targetLongitudeInput = document.getElementById('target-longitude')
 const targetRadiusInput = document.getElementById('target-radius')
 
+const alertWindow = document.getElementById('alert');
+
+let isAlertBeingShown = false;
+
 
 const targetRadius = 0.1; // in kilometers
 
@@ -57,16 +61,7 @@ if ('geolocation' in navigator) {
 }
 
 
-appButton.onclick = function() {
-    appWindow.style.display = 'block';
-    appButton.style.backgroundColor = '#AAAAAA';
-
-    logsWindow.style.display = 'none';
-    logsButton.style.backgroundColor = 'white';
-
-    targetLocationsWindow.style.display = 'none'
-    targetLocationsButton.style.backgroundColor = 'white'
-}
+appButton.onclick = switchToAppWindow
 
 logsButton.onclick = function() {
     appWindow.style.display = 'none';
@@ -124,6 +119,17 @@ addTargetLocationButton?.addEventListener('click', function(){
         log(`Error: addTargetLocationButton onclick | ${e.toString()}`)
     }
 })
+
+function switchToAppWindow(){
+    appWindow.style.display = 'block';
+    appButton.style.backgroundColor = '#AAAAAA';
+
+    logsWindow.style.display = 'none';
+    logsButton.style.backgroundColor = 'white';
+
+    targetLocationsWindow.style.display = 'none'
+    targetLocationsButton.style.backgroundColor = 'white'
+}
 
 
  
@@ -189,10 +195,24 @@ function handleLocationUpdate(location) {
             lon: location.coords.longitude
         };
 
+        if(isAlertBeingShown)
+            return
         for(let targetLocation of targetLocations){
             let distance = calculateDistance(currentLocation.lat, currentLocation.lon, targetLocation.coords.latitude, targetLocation.coords.longitude);
             if(distance <= targetLocation.targetRadius){
-                log(`You are ${distance} kms away from ${targetLocation.name}`);
+                isAlertBeingShown = true;
+                let content = `You are ${distance} kms away from ${targetLocation.name}`
+                log(content);
+                playSound()
+                navigator?.vibrate([
+                    100, 30, 100, 30, 100, 30, 200, 30, 200, 30, 200, 30, 100, 30, 100, 30, 100,
+                  ]);
+                showAlert(content, () => {
+                    isAlertBeingShown = false
+                    stopSound()
+                    let index = targetLocations.indexOf(targetLocation)
+                    targetLocations.splice(index, 1)
+                })
             }
         }
     }
@@ -223,6 +243,30 @@ function generateUIForTargetLocations(){
         div.innerHTML = `Name: ${loc.name}<br>Latitude: ${loc.coords.latitude}<br>Longitude: ${loc.coords.longitude}<br>Target Radius: ${loc.targetRadius} kms<br>Distance from here: ${calculateDistance(lastKnownCoords.latitude, lastKnownCoords.longitude, loc.coords.latitude, loc.coords.longitude)} kms<br>`
         targetLocationsContainer.appendChild(div)
     })
+}
+
+
+function playSound() {
+    let audio = new Audio('alert.mp3'); 
+    window.audio = audio
+    audio.loop = true;
+    audio.play();
+}
+
+function stopSound(){
+    window.audio.pause()
+}
+
+
+function showAlert(content, onAlertClose){
+
+    alertWindow.style.display = 'block';
+    alertWindow.querySelector('span').innerHTML = content;
+    alertWindow.querySelector('button').onclick = function(){
+        alertWindow.style.display = 'none';
+        onAlertClose?.()
+    }
+    
 }
 
 

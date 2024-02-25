@@ -44,6 +44,12 @@
         <h2>Logs</h2>
         <div id="logs-container" style="display: block; width: 100%; min-height: 500px; border: solid 1px"></div>
     </div>
+    <div id="alert" style="background-color: rgba(0, 0, 0, 0.5); position: absolute; width: 100%; height: 100%; display: none; top: 0px; left: 0px;">
+        <div style="display: flex; flex-direction: column; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; width: 70%; height: 200px; align-items: center; justify-content: center;">
+            <span id="alert-content">Test content</span><br>
+            <button id="alert-ok">Ok</button>
+        </div>
+    </div>
 
 
     <script src="app.js"></script>
