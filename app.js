@@ -94,23 +94,6 @@ targetLocationsButton.onclick = function(){
     targetLocationsButton.style.backgroundColor = '#AAAAAA'
 }
 
-
-targetLocationButton?.addEventListener('click', async function(){
-    try{
-        log('targetLocationButton clicked')
-        let location = await new Promise((rs) => {
-            navigator.geolocation.getCurrentPosition(rs, log, geoOptions)
-        })
-        log('targetLocationButton click success', location.coords.toJSON())
-        updateLocationCoordsToApp(location.coords)
-        targetLocation.latitude = location.coords.latitude;
-        targetLocation.longitude = location.coords.longitude;
-    }
-    catch(e){
-        log(`Error: targetLocationButton onclick | ${e.toString()}`)
-    }
-})
-
 addTargetLocationButton?.addEventListener('click', function(){
     try{
         addTargetLocationToList({
@@ -209,19 +192,19 @@ function handleLocationUpdate(location) {
         for(let targetLocation of targetLocations){
             let distance = calculateDistance(currentLocation.lat, currentLocation.lon, targetLocation.coords.latitude, targetLocation.coords.longitude);
             if(distance <= targetLocation.targetRadius){
-                isAlertBeingShown = true;
                 let content = `You are ${distance} kms away from ${targetLocation.name}`
                 log(content);
                 playSound()
-                navigator?.vibrate([
-                    100, 30, 100, 30, 100, 30, 200, 30, 200, 30, 200, 30, 100, 30, 100, 30, 100,
-                  ]);
                 showAlert(content, () => {
                     isAlertBeingShown = false
                     stopSound()
                     let index = targetLocations.indexOf(targetLocation)
                     targetLocations.splice(index, 1)
                 })
+                isAlertBeingShown = true;
+                navigator?.vibrate([
+                    100, 30, 100, 30, 100, 30, 200, 30, 200, 30, 200, 30, 100, 30, 100, 30, 100,
+                  ]);
             }
         }
     }
