@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Monitoring PWA</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <h1>Location Monitoring PWA</h1>
+    <div id="menubar" style="display: flex; flex-direction: row;">
+        <button id="app-button" style="display: block; border: solid 1px;">App</button>
+        <button id="logs-button" style="display: block;">Logs</button>
+    </div>
+    <div id="app-window" style="display: block; width: 100%; min-height: 500px; border: solid 1px">App</div>
+    <div id="logs-window" style="display: none; width: 100%; min-height: 500px; border: solid 1px">
+        <h2>Logs</h2>
+        <div id="logs-container" style="display: block; width: 100%; min-height: 500px; border: solid 1px"></div>
+    </div>
+
+
+    <script src="/app.js"></script>
+</body>
+</html>
