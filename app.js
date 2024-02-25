@@ -5,6 +5,8 @@ const appWindow = document.getElementById('app-window')
 const logsWindow = document.getElementById('logs-window')
 const logsContainer = document.getElementById('logs-container')
 
+const targetLocation = { latitude: 9.73581586172279, longitude: 77.7916178550191 };
+
 let lastKnownLocation = null;
 
 // Register service worker
@@ -68,6 +70,11 @@ if ('geolocation' in navigator) {
     }
 
     navigator.geolocation.watchPosition(handleLocationUpdate, handleLocationError, geoOptions);
+
+    // setInterval(() => {
+    //     log("Requesting location...")
+    //     navigator.geolocation.getCurrentPosition(handleLocationUpdate, handleLocationError, geoOptions);
+    // }, 3 * 1000)
 } else {
     log('Geolocation is not supported by this browser.');
 }
@@ -97,10 +104,19 @@ function log(...args){
     }
 }
 
-appWindow.innerHTML = lastKnownLocation ? lastKnownLocation.toString() : 'No location data available'
+// appWindow.innerHTML = lastKnownLocation ? lastKnownLocation.toString() : 'No location data available'
 function updateLocationToApp(location){
     lastKnownLocation = location
-    appWindow.innerHTML = location ? location.toString() : 'No location data available';
+    // with better formatting
+    document.getElementById('distance-from-target').innerText = "Distance from Target Location : (9.73581586172279, 77.7916178550191): " + calculateDistance(location.latitude, location.longitude, targetLocation.latitude, targetLocation.longitude) + " km";
+    document.getElementById('latitude').innerText = "Latitude: " + location.latitude;
+    document.getElementById('longitude').innerText = "Longitude: " + location.longitude;
+    document.getElementById('accuracy').innerText = "Accuracy: " + location.accuracy;
+    document.getElementById('altitude').innerText = "Altitude: " + location.altitude;
+    document.getElementById('altitudeAccuracy').innerText = "Altitude Accuracy: " + location.altitudeAccuracy;
+    document.getElementById('heading').innerText = "Heading: " + location.heading;
+    document.getElementById('speed').innerText = "Speed: " + location.speed;
+    
 }
 
 GeolocationCoordinates.prototype.toString = function(){

@@ -15,7 +15,19 @@
         <button id="app-button" style="display: block; border: solid 1px;">App</button>
         <button id="logs-button" style="display: block;">Logs</button>
     </div>
-    <div id="app-window" style="display: block; width: 100%; min-height: 500px; border: solid 1px">App</div>
+    <div id="app-window" style="display: block; width: 100%; min-height: 500px; border: solid 1px">
+        <h2>Location</h2>
+        <h3 id="distance-from-target"></h3>
+        <div id="details-container" style="display: block; width: 100%; min-height: 500px; border: solid 1px">
+            <span id="latitude"></span><br>
+            <span id="longitude"></span><br>
+            <span id="accuracy"></span><br>
+            <span id="altitude"></span><br>
+            <span id="altitudeAccuracy"></span><br>
+            <span id="heading"></span><br>
+            <span id="speed"></span><br>
+        </div>
+    </div>
     <div id="logs-window" style="display: none; width: 100%; min-height: 500px; border: solid 1px">
         <h2>Logs</h2>
         <div id="logs-container" style="display: block; width: 100%; min-height: 500px; border: solid 1px"></div>
