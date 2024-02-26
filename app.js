@@ -237,14 +237,19 @@ function generateUIForTargetLocations(){
 
 
 function playSound() {
+    try{
     let audio = new Audio('alert.mp3'); 
     window.audio = audio
     audio.loop = true;
     audio.play();
+    }
+    catch(e){
+        log("error in playAudio:",e.message)
+    }
 }
 
 function stopSound(){
-    window.audio.pause()
+    window.audio?.pause()
 }
 
 
