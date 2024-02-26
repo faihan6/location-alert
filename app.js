@@ -202,9 +202,7 @@ function handleLocationUpdate(location) {
                     targetLocations.splice(index, 1)
                 })
                 isAlertBeingShown = true;
-                navigator?.vibrate([
-                    100, 30, 100, 30, 100, 30, 200, 30, 200, 30, 200, 30, 100, 30, 100, 30, 100,
-                  ]);
+                  
             }
         }
     }
